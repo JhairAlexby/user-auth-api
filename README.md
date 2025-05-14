@@ -18,3 +18,9 @@ npm install
 ```
 npm run start:dev
 ```
+
+## Probar el endpoint de registro de usuario
+
+**Método:** POST
+
+**URL:** `http://localhost:3000/auth`

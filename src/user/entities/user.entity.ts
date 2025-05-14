@@ -15,7 +15,13 @@ export class User {
   email: string;
 
   @Column()
-  passwordHash: string;
+  paternalLastName: string;
+
+  @Column()
+  maternalLastName: string;
+
+  @Column()
+  password: string;
 
   @Column({ default: true })
   isActive: boolean;

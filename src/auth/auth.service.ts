@@ -2,7 +2,7 @@ import { Injectable, ConflictException, InternalServerErrorException } from '@ne
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
@@ -30,14 +30,14 @@ export class AuthService {
       paternalLastName,
       maternalLastName,
       email,
-      password: passwordHash, 
-      isActive: true, 
+      password: passwordHash,
+      isActive: true,
     });
 
     try {
       await this.userRepository.save(newUser);
-      const { password: _, ...userWithoutPassword } = newUser; 
-      return userWithoutPassword as User; 
+      const { password: _, ...userWithoutPassword } = newUser;
+      return userWithoutPassword as User;
     } catch (error) {
       throw new InternalServerErrorException('Error creating user');
     }
