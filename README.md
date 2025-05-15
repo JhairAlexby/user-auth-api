@@ -56,3 +56,12 @@ npm run start:dev
 
 **DELETE TOTAL:** `DELETE http://localhost:3000/auth/id`
 **DELETE PARTIAL:** `PATCH http://localhost:3000/auth/soft-delete/{id}`
+
+## Para probar el endpoint de login
+**POST:** ` http://localhost:3000/auth/login`
+
+```
+{
+    "email": "",
+    "password": ""
+}
