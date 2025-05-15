@@ -5,12 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { LoginAuthDto } from './dto/login-auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async create(createAuthDto: CreateAuthDto): Promise<User> {
@@ -111,5 +114,20 @@ export class AuthService {
     } catch (error) {
       throw new InternalServerErrorException('Error performing soft delete');
     }
+  }
+
+  async login(loginAuthDto: LoginAuthDto): Promise<{ accessToken: string }> {
+    const { email, password } = loginAuthDto;
+    const user = await this.userRepository.findOne({ where: { email } });
+    if (!user || !user.isActive) {
+      throw new NotFoundException('invalid credentials');
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new NotFoundException('invalid credentials');
+    }
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
+    return { accessToken };
   }
 }
