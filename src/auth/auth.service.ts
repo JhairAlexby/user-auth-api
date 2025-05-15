@@ -57,11 +57,59 @@ export class AuthService {
     return userWithoutPassword;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
+  async update(id: string, updateAuthDto: UpdateAuthDto): Promise<Omit<User, 'password'>> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
+
+    if (updateAuthDto.password) {
+      const saltRounds = 10;
+      updateAuthDto.password = await bcrypt.hash(updateAuthDto.password, saltRounds);
+    }
+
+    Object.assign(user, updateAuthDto);
+
+    try {
+      await this.userRepository.save(user);
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      if (error.code === '23505') { // Código de error para violación de unicidad en PostgreSQL
+        throw new ConflictException('Email already exists');
+      }
+      throw new InternalServerErrorException('Error updating user');
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
+  async remove(id: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
+
+    try {
+      await this.userRepository.remove(user);
+      return { message: `User with ID "${id}" successfully removed` };
+    } catch (error) {
+      throw new InternalServerErrorException('Error removing user');
+    }
+  }
+
+  async softDelete(id: string): Promise<{ message: string }> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ID "${id}" not found`);
+    }
+    if (!user.isActive) {
+      return { message: `User with ID "${id}" is already inactive` };
+    }
+    user.isActive = false;
+    try {
+      await this.userRepository.save(user);
+      return { message: `User with ID "${id}" successfully deactivated (soft deleted)` };
+    } catch (error) {
+      throw new InternalServerErrorException('Error performing soft delete');
+    }
   }
 }

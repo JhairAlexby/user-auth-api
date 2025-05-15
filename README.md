@@ -40,3 +40,19 @@ npm run start:dev
 
 **GET id:** `http://localhost:3000/auth/id`
 
+## Probar el endpoint de modificar 
+**PATCH:** `http://localhost:3000/auth/id`
+```
+{
+    "firstName": "",
+    "lastName": "",
+    "email": "",
+    "paternalLastName": "",
+    "maternalLastName": ""
+}
+```
+
+## Probar el endpoint de eliminar
+
+**DELETE TOTAL:** `DELETE http://localhost:3000/auth/id`
+**DELETE PARTIAL:** `PATCH http://localhost:3000/auth/soft-delete/{id}`
