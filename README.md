@@ -21,6 +21,22 @@ npm run start:dev
 
 ## Probar el endpoint de registro de usuario
 
-**Método:** POST
+**POST:** `http://localhost:3000/auth`
+**RAW:**
+```
+{
+  "firstName": "name",
+  "lastName": "lastName",
+  "paternalLastName": "paternalLastName",
+  "maternalLastName": "maternalLastName",
+  "email": "email@example.com",
+  "password": ""
+}
+```
 
-**URL:** `http://localhost:3000/auth`
+## Probas el endpoint de busqueda de usuario
+
+**GET ALL:** `http://localhost:3000/auth`
+
+**GET id:** `http://localhost:3000/auth/id`
+
